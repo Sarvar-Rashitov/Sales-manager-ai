@@ -1,0 +1,6 @@
+-r base.txt
+
+# Production
+psycopg2-binary==2.9.9
+whitenoise==6.7.0
+gunicorn==22.0.0

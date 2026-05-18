@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Lead{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <h1 class="text-xl font-bold mb-6">{{ action }} Lead</h1>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <div class="flex space-x-3 pt-2">
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium">
+          Save
+        </button>
+        <a href="{% url 'crm:lead_list' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

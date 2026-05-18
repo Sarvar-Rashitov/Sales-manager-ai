@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}AI Prompts{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">AI Prompts</h1>
+    <a href="{% url 'ai_agents:prompt_create' %}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+      <i data-lucide="plus" aria-hidden="true"></i>
+      New Prompt
+    </a>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {% for prompt in prompts %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">{{ prompt.name }}</h3>
+        <div class="flex space-x-2">
+          {% if prompt.is_default %}<span class="px-2 py-1 text-xs bg-indigo-100 text-indigo-700 rounded-full">Default</span>{% endif %}
+          {% if prompt.is_active %}<span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">Active</span>{% endif %}
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 mb-3">{{ prompt.get_agent_type_display }}</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">{{ prompt.system_prompt }}</p>
+    </div>
+    {% empty %}
+    <div class="col-span-2 text-center py-12 text-gray-500">
+      No prompts yet.
+      <a href="{% url 'ai_agents:prompt_create' %}" class="inline-flex items-center gap-1 text-indigo-600 hover:underline">
+        Create one <i data-lucide="arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

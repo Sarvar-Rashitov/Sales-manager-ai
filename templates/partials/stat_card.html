@@ -1,0 +1,11 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5">
+  <div class="flex items-center justify-between gap-4">
+    <div class="min-w-0">
+      <p class="text-sm text-gray-500 dark:text-gray-400">{{ label }}</p>
+      <p class="text-2xl font-bold mt-1 truncate">{{ value }}</p>
+    </div>
+    <div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 flex items-center justify-center">
+      <i data-lucide="{{ icon|default:'bar-chart-3' }}" class="icon-lg" aria-hidden="true"></i>
+    </div>
+  </div>
+</div>

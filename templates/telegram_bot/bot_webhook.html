@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Setup Webhook - {{ bot.name }}{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto space-y-6">
+  <h1 class="text-2xl font-bold">Setup Webhook</h1>
+
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+    <div>
+      <p class="text-sm font-medium text-gray-500 mb-1">Bot</p>
+      <p class="font-semibold">@{{ bot.bot_username }} - {{ bot.name }}</p>
+    </div>
+    <div>
+      <p class="text-sm font-medium text-gray-500 mb-1">Webhook URL (auto-generated)</p>
+      <code class="block bg-gray-50 dark:bg-gray-700 px-4 py-3 rounded-lg text-sm break-all">{{ webhook_url }}</code>
+    </div>
+
+    <div class="flex items-start gap-2 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
+      <i data-lucide="alert-triangle" class="mt-0.5" aria-hidden="true"></i>
+      <span>
+        Webhook faqat HTTPS URL'da ishlaydi. Local dev uchun
+        <a href="https://ngrok.com" target="_blank" class="underline">ngrok</a> yoki
+        <a href="https://localtunnel.me" target="_blank" class="underline">localtunnel</a> ishlating.
+      </span>
+    </div>
+
+    <form method="post" class="flex space-x-3">
+      {% csrf_token %}
+      <button type="submit"
+              class="inline-flex flex-1 items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-medium">
+        <i data-lucide="link" aria-hidden="true"></i>
+        Set Webhook
+      </button>
+      <a href="{% url 'telegram:account_list' %}"
+         class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm">
+        Skip
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Leads - AI Sales Manager{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Leads</h1>
+    <a href="{% url 'crm:lead_create' %}"
+       class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+      <i data-lucide="plus" aria-hidden="true"></i>
+      New Lead
+    </a>
+  </div>
+
+  <!-- Status filter -->
+  <div class="flex space-x-2 flex-wrap gap-2">
+    <a href="{% url 'crm:lead_list' %}"
+       class="px-3 py-1.5 rounded-full text-sm {% if not status_filter %}bg-indigo-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+      All
+    </a>
+    {% for value, label in status_choices %}
+    <a href="?status={{ value }}"
+       class="px-3 py-1.5 rounded-full text-sm {% if status_filter == value %}bg-indigo-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+      {{ label }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Leads table -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3 text-left">Lead</th>
+          <th class="px-6 py-3 text-left">Status</th>
+          <th class="px-6 py-3 text-left">Source</th>
+          <th class="px-6 py-3 text-left">Score</th>
+          <th class="px-6 py-3 text-left">Assigned</th>
+          <th class="px-6 py-3 text-left">Created</th>
+          <th class="px-6 py-3 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+        {% for lead in leads %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <td class="px-6 py-4">
+            <a href="{% url 'crm:lead_detail' lead.pk %}" class="font-medium hover:text-indigo-600">
+              {{ lead.title }}
+            </a>
+            {% if lead.contact %}
+            <p class="text-xs text-gray-500">{{ lead.contact.full_name }}</p>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4">
+            <span class="px-2 py-1 text-xs rounded-full
+              {% if lead.status == 'won' %}bg-green-100 text-green-700
+              {% elif lead.status == 'lost' %}bg-red-100 text-red-700
+              {% elif lead.status == 'qualified' %}bg-blue-100 text-blue-700
+              {% elif lead.status == 'new' %}bg-gray-100 text-gray-700
+              {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+              {{ lead.get_status_display }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-gray-500">{{ lead.get_source_display }}</td>
+          <td class="px-6 py-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-16 bg-gray-200 rounded-full h-1.5">
+                <div class="bg-indigo-600 h-1.5 rounded-full" style="width: {{ lead.score }}%"></div>
+              </div>
+              <span class="text-xs text-gray-500">{{ lead.score }}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-gray-500">{{ lead.assigned_to.full_name|default:"-" }}</td>
+          <td class="px-6 py-4 text-gray-500">{{ lead.created_at|date:"M d, Y" }}</td>
+          <td class="px-6 py-4">
+            <div class="flex space-x-2">
+              <a href="{% url 'ai_agents:chat' lead.pk %}"
+                 class="inline-flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200">
+                <i data-lucide="bot" aria-hidden="true"></i>
+                AI Chat
+              </a>
+              <a href="{% url 'crm:lead_edit' lead.pk %}"
+                 class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200">
+                <i data-lucide="pencil" aria-hidden="true"></i>
+                Edit
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+            No leads found.
+            <a href="{% url 'crm:lead_create' %}" class="inline-flex items-center gap-1 text-indigo-600 hover:underline">
+              Create your first lead <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

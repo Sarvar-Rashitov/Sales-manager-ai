@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - AI Sales Manager{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <h1 class="text-2xl font-bold">Dashboard</h1>
+
+  <!-- Stats grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {% include "partials/stat_card.html" with label="Total Leads" value=stats.total_leads icon="users" color="indigo" %}
+    {% include "partials/stat_card.html" with label="New This Month" value=stats.new_this_month icon="sparkles" color="green" %}
+    {% include "partials/stat_card.html" with label="Conversion Rate" value=stats.conversion_rate|stringformat:"s%%" icon="trending-up" color="purple" %}
+    {% include "partials/stat_card.html" with label="Revenue" value=stats.total_revenue icon="badge-dollar-sign" color="yellow" %}
+    {% include "partials/stat_card.html" with label="Qualified Leads" value=stats.qualified icon="check-circle-2" color="blue" %}
+    {% include "partials/stat_card.html" with label="Won Deals" value=stats.won icon="trophy" color="green" %}
+    {% include "partials/stat_card.html" with label="AI Calls Today" value=stats.ai_calls_today icon="bot" color="pink" %}
+    {% include "partials/stat_card.html" with label="Pending Follow-ups" value=stats.pending_followups icon="bell-ring" color="orange" %}
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Leads -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">Recent Leads</h2>
+        <a href="{% url 'crm:lead_list' %}" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+          View all <i data-lucide="arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+      <div class="space-y-3">
+        {% for lead in recent_leads %}
+        <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+          <div>
+            <a href="{% url 'crm:lead_detail' lead.pk %}" class="font-medium hover:text-indigo-600">{{ lead.title }}</a>
+            <p class="text-xs text-gray-500">{{ lead.source }} / {{ lead.created_at|timesince }} ago</p>
+          </div>
+          <span class="px-2 py-1 text-xs rounded-full
+            {% if lead.status == 'won' %}bg-green-100 text-green-700
+            {% elif lead.status == 'lost' %}bg-red-100 text-red-700
+            {% elif lead.status == 'qualified' %}bg-blue-100 text-blue-700
+            {% else %}bg-gray-100 text-gray-700{% endif %}">
+            {{ lead.get_status_display }}
+          </span>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 text-sm">
+          No leads yet.
+          <a href="{% url 'crm:lead_create' %}" class="inline-flex items-center gap-1 text-indigo-600 hover:underline">
+            Create one <i data-lucide="arrow-right" aria-hidden="true"></i>
+          </a>
+        </p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Upcoming Follow-ups -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">Upcoming Follow-ups</h2>
+        <a href="{% url 'followups:followup_list' %}" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+          View all <i data-lucide="arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+      <div class="space-y-3">
+        {% for fu in upcoming_followups %}
+        <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+          <div>
+            <p class="font-medium text-sm">{{ fu.lead.title }}</p>
+            <p class="text-xs text-gray-500">{{ fu.channel }} / {{ fu.scheduled_at|date:"M d, H:i" }}</p>
+          </div>
+          {% if fu.ai_generated %}
+          <span class="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full">AI</span>
+          {% endif %}
+        </div>
+        {% empty %}
+        <p class="text-gray-500 text-sm">No upcoming follow-ups.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

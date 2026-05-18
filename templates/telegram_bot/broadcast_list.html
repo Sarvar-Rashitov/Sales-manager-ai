@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Broadcasts{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="flex items-center gap-2 text-2xl font-bold">
+      <i data-lucide="send" aria-hidden="true"></i>
+      Broadcasts
+    </h1>
+    <a href="{% url 'telegram:broadcast_create' %}"
+       class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+      <i data-lucide="plus" aria-hidden="true"></i>
+      New Broadcast
+    </a>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3 text-left">Name</th>
+          <th class="px-6 py-3 text-left">Channel</th>
+          <th class="px-6 py-3 text-left">Status</th>
+          <th class="px-6 py-3 text-left">Recipients</th>
+          <th class="px-6 py-3 text-left">Success</th>
+          <th class="px-6 py-3 text-left">Created</th>
+          <th class="px-6 py-3 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+        {% for bc in broadcasts %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 font-medium">
+            <a href="{% url 'telegram:broadcast_detail' bc.pk %}" class="hover:text-indigo-600">{{ bc.name }}</a>
+          </td>
+          <td class="px-6 py-4 text-gray-500">
+            {% if bc.channel == 'bot' %}
+              <span class="inline-flex items-center gap-1"><i data-lucide="bot" aria-hidden="true"></i> Bot API</span>
+            {% else %}
+              <span class="inline-flex items-center gap-1"><i data-lucide="smartphone" aria-hidden="true"></i> Userbot</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4">
+            <span class="px-2 py-1 text-xs rounded-full
+              {% if bc.status == 'completed' %}bg-green-100 text-green-700
+              {% elif bc.status == 'running' %}bg-blue-100 text-blue-700
+              {% elif bc.status == 'failed' %}bg-red-100 text-red-700
+              {% elif bc.status == 'cancelled' %}bg-gray-100 text-gray-500
+              {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+              {{ bc.get_status_display }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-gray-500">{{ bc.total_recipients }}</td>
+          <td class="px-6 py-4">
+            {% if bc.total_recipients > 0 %}
+            <div class="flex items-center space-x-2">
+              <div class="w-16 bg-gray-200 rounded-full h-1.5">
+                <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ bc.success_rate }}%"></div>
+              </div>
+              <span class="text-xs text-gray-500">{{ bc.success_rate }}%</span>
+            </div>
+            {% else %}-{% endif %}
+          </td>
+          <td class="px-6 py-4 text-gray-500">{{ bc.created_at|date:"M d, Y" }}</td>
+          <td class="px-6 py-4">
+            <a href="{% url 'telegram:broadcast_detail' bc.pk %}"
+               class="inline-flex items-center gap-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded">
+              <i data-lucide="eye" aria-hidden="true"></i>
+              View
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+            No broadcasts yet.
+            <a href="{% url 'telegram:broadcast_create' %}" class="inline-flex items-center gap-1 text-indigo-600 hover:underline">
+              Create one <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

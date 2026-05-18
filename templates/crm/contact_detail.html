@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ contact.full_name }}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center space-x-3">
+    <a href="{% url 'crm:contact_list' %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600">
+      <i data-lucide="arrow-left" aria-hidden="true"></i>
+      Contacts
+    </a>
+    <h1 class="text-2xl font-bold">{{ contact.full_name }}</h1>
+  </div>
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <dl class="grid grid-cols-2 gap-4 text-sm">
+      <div><dt class="text-gray-500">Email</dt><dd>{{ contact.email|default:"-" }}</dd></div>
+      <div><dt class="text-gray-500">Phone</dt><dd>{{ contact.phone|default:"-" }}</dd></div>
+      <div><dt class="text-gray-500">Telegram</dt><dd>{% if contact.telegram_username %}@{{ contact.telegram_username }}{% else %}-{% endif %}</dd></div>
+      <div><dt class="text-gray-500">Position</dt><dd>{{ contact.position|default:"-" }}</dd></div>
+      <div><dt class="text-gray-500">Company</dt><dd>{{ contact.company.name|default:"-" }}</dd></div>
+    </dl>
+  </div>
+</div>
+{% endblock %}

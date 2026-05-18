@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Conversation{% endblock %}
+
+{% block content %}
+<div class="flex flex-col" style="height: calc(100vh - 8rem);">
+  <div class="flex items-center space-x-3 mb-4">
+    <a href="{% url 'messaging:inbox' %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600">
+      <i data-lucide="arrow-left" aria-hidden="true"></i>
+      Inbox
+    </a>
+    <h1 class="text-xl font-bold">{{ conversation.lead.title|default:"Conversation" }}</h1>
+    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">{{ conversation.get_status_display }}</span>
+  </div>
+
+  <div class="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
+    <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-4">
+      {% for msg in messages %}
+      <div class="flex {% if msg.sender_type == 'operator' %}justify-end{% else %}justify-start{% endif %}">
+        <div class="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl text-sm
+          {% if msg.sender_type == 'operator' %}bg-indigo-600 text-white rounded-tr-sm
+          {% elif msg.sender_type == 'ai' %}bg-purple-100 text-purple-900 rounded-tl-sm
+          {% else %}bg-gray-100 dark:bg-gray-700 rounded-tl-sm{% endif %}">
+          {% if msg.sender_type == 'ai' %}
+            <span class="inline-flex items-center gap-1 text-xs font-bold mb-1">
+              <i data-lucide="bot" aria-hidden="true"></i>
+              AI
+            </span>
+          {% endif %}
+          {{ msg.content }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+      <div id="typing-indicator" class="text-xs text-gray-400 mb-2 hidden">Agent is typing...</div>
+      <form id="chat-form" class="flex space-x-3">
+        {% csrf_token %}
+        <input type="text" id="message-input" placeholder="Type a message..."
+               class="flex-1 text-sm" />
+        <button type="submit" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-medium">
+          <i data-lucide="send" aria-hidden="true"></i>
+          Send
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const conversationId = "{{ conversation.id }}";
+const wsUrl = `ws://${window.location.host}/ws/chat/${conversationId}/`;
+const ws = new WebSocket(wsUrl);
+const messagesDiv = document.getElementById('messages');
+
+ws.onmessage = function(e) {
+  const data = JSON.parse(e.data);
+  if (data.type === 'message') {
+    const div = document.createElement('div');
+    div.className = 'flex justify-start';
+    div.innerHTML = `<div class="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl text-sm bg-gray-100 dark:bg-gray-700 rounded-tl-sm">${data.content}</div>`;
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = 999999;
+  } else if (data.type === 'typing') {
+    document.getElementById('typing-indicator').classList.toggle('hidden', !data.is_typing);
+  }
+};
+
+document.getElementById('chat-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const input = document.getElementById('message-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  ws.send(JSON.stringify({ type: 'message', content: msg }));
+
+  const div = document.createElement('div');
+  div.className = 'flex justify-end';
+  div.innerHTML = `<div class="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl text-sm bg-indigo-600 text-white rounded-tr-sm">${msg}</div>`;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = 999999;
+  input.value = '';
+});
+
+messagesDiv.scrollTop = 999999;
+</script>
+{% endblock %}

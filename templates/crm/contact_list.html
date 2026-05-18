@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Contacts{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Contacts</h1>
+    <a href="{% url 'crm:contact_create' %}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+      <i data-lucide="plus" aria-hidden="true"></i>
+      New Contact
+    </a>
+  </div>
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3 text-left">Name</th>
+          <th class="px-6 py-3 text-left">Email</th>
+          <th class="px-6 py-3 text-left">Phone</th>
+          <th class="px-6 py-3 text-left">Telegram</th>
+          <th class="px-6 py-3 text-left">Company</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+        {% for contact in contacts %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4"><a href="{% url 'crm:contact_detail' contact.pk %}" class="font-medium hover:text-indigo-600">{{ contact.full_name }}</a></td>
+          <td class="px-6 py-4 text-gray-500">{{ contact.email|default:"-" }}</td>
+          <td class="px-6 py-4 text-gray-500">{{ contact.phone|default:"-" }}</td>
+          <td class="px-6 py-4 text-gray-500">{% if contact.telegram_username %}@{{ contact.telegram_username }}{% else %}-{% endif %}</td>
+          <td class="px-6 py-4 text-gray-500">{{ contact.company.name|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-6 py-12 text-center text-gray-500">No contacts yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

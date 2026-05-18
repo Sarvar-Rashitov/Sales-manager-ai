@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Proposals{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <h1 class="text-2xl font-bold">Proposals</h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for proposal in proposals %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">{{ proposal.title }}</h3>
+        <span class="px-2 py-1 text-xs rounded-full
+          {% if proposal.status == 'accepted' %}bg-green-100 text-green-700
+          {% elif proposal.status == 'rejected' %}bg-red-100 text-red-700
+          {% elif proposal.status == 'sent' %}bg-blue-100 text-blue-700
+          {% else %}bg-gray-100 text-gray-700{% endif %}">
+          {{ proposal.get_status_display }}
+        </span>
+      </div>
+      <p class="text-sm text-gray-500">${{ proposal.total_value }} / {{ proposal.created_at|date:"M d, Y" }}</p>
+      <a href="{% url 'sales:proposal_detail' proposal.pk %}" class="mt-3 inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+        View <i data-lucide="arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+    {% empty %}
+    <div class="col-span-3 text-center py-12 text-gray-500">No proposals yet.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

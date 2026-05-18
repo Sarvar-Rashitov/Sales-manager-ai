@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Companies{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Companies</h1>
+    <a href="{% url 'crm:company_create' %}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+      <i data-lucide="plus" aria-hidden="true"></i>
+      New Company
+    </a>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for company in companies %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+      <h3 class="font-semibold">{{ company.name }}</h3>
+      <p class="text-sm text-gray-500">{{ company.industry|default:"-" }} / {{ company.country|default:"-" }}</p>
+      {% if company.website %}<a href="{{ company.website }}" class="text-xs text-indigo-600 hover:underline" target="_blank">{{ company.website }}</a>{% endif %}
+    </div>
+    {% empty %}
+    <div class="col-span-3 text-center py-12 text-gray-500">No companies yet.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}{{ lead.title }} - AI Sales Manager{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <div class="flex items-center space-x-3">
+        <a href="{% url 'crm:lead_list' %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600">
+          <i data-lucide="arrow-left" aria-hidden="true"></i>
+          Leads
+        </a>
+        <h1 class="text-2xl font-bold">{{ lead.title }}</h1>
+        <span class="px-3 py-1 text-sm rounded-full
+          {% if lead.status == 'won' %}bg-green-100 text-green-700
+          {% elif lead.status == 'lost' %}bg-red-100 text-red-700
+          {% elif lead.status == 'qualified' %}bg-blue-100 text-blue-700
+          {% else %}bg-gray-100 text-gray-700{% endif %}">
+          {{ lead.get_status_display }}
+        </span>
+      </div>
+      <p class="text-gray-500 mt-1">Source: {{ lead.get_source_display }} / Score: {{ lead.score }}/100</p>
+    </div>
+    <div class="flex flex-wrap gap-3 justify-end">
+      <a href="{% url 'ai_agents:chat' lead.pk %}"
+         class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+        <i data-lucide="bot" aria-hidden="true"></i>
+        AI Chat
+      </a>
+      <a href="{% url 'followups:generate_ai' lead.pk %}"
+         class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+        <i data-lucide="bell-ring" aria-hidden="true"></i>
+        AI Follow-up
+      </a>
+      <a href="{% url 'sales:generate_proposal' lead.pk %}"
+         class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+        <i data-lucide="file-text" aria-hidden="true"></i>
+        Proposal
+      </a>
+      <a href="{% url 'crm:lead_edit' lead.pk %}"
+         class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+        <i data-lucide="pencil" aria-hidden="true"></i>
+        Edit
+      </a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Lead info -->
+    <div class="lg:col-span-1 space-y-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+        <h3 class="font-semibold mb-3">Lead Details</h3>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Status</dt>
+            <dd>{{ lead.get_status_display }}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Score</dt>
+            <dd>{{ lead.score }}/100</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Budget</dt>
+            <dd>{{ lead.budget|default:"Unknown" }}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Assigned To</dt>
+            <dd>{{ lead.assigned_to.full_name|default:"Unassigned" }}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Last Contact</dt>
+            <dd>{{ lead.last_contacted_at|date:"M d, Y"|default:"Never" }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      {% if lead.contact %}
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+        <h3 class="font-semibold mb-3">Contact</h3>
+        <p class="font-medium">{{ lead.contact.full_name }}</p>
+        {% if lead.contact.email %}<p class="text-sm text-gray-500">{{ lead.contact.email }}</p>{% endif %}
+        {% if lead.contact.phone %}<p class="text-sm text-gray-500">{{ lead.contact.phone }}</p>{% endif %}
+        {% if lead.contact.telegram_username %}<p class="text-sm text-gray-500">@{{ lead.contact.telegram_username }}</p>{% endif %}
+      </div>
+      {% endif %}
+
+      {% if lead.ai_summary %}
+      <div class="bg-purple-50 dark:bg-purple-900 rounded-lg border border-purple-200 dark:border-purple-700 p-5">
+        <h3 class="flex items-center gap-2 font-semibold mb-2 text-purple-800 dark:text-purple-200">
+          <i data-lucide="bot" aria-hidden="true"></i>
+          AI Summary
+        </h3>
+        <p class="text-sm text-purple-700 dark:text-purple-300">{{ lead.ai_summary }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Activity + Notes -->
+    <div class="lg:col-span-2 space-y-4">
+      <!-- Add note -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+        <h3 class="font-semibold mb-3">Add Note</h3>
+        <form method="post" action="{% url 'crm:add_note' lead.pk %}">
+          {% csrf_token %}
+          {{ note_form.content }}
+          <button type="submit"
+                  class="inline-flex items-center gap-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            Add Note
+          </button>
+        </form>
+      </div>
+
+      <!-- Activity timeline -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+        <h3 class="font-semibold mb-4">Activity Timeline</h3>
+        <div class="space-y-3">
+          {% for activity in activities %}
+          <div class="flex space-x-3">
+            <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 flex-shrink-0">
+              {% if activity.activity_type == 'status_change' %}
+                <i data-lucide="refresh-cw" aria-hidden="true"></i>
+              {% elif activity.activity_type == 'ai_action' %}
+                <i data-lucide="bot" aria-hidden="true"></i>
+              {% elif activity.activity_type == 'telegram' %}
+                <i data-lucide="smartphone" aria-hidden="true"></i>
+              {% else %}
+                <i data-lucide="notebook-pen" aria-hidden="true"></i>
+              {% endif %}
+            </div>
+            <div class="flex-1">
+              <p class="text-sm">{{ activity.description }}</p>
+              <p class="text-xs text-gray-500">{{ activity.created_at|timesince }} ago</p>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-gray-500 text-sm">No activity yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

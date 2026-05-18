@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Deals{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Deals</h1>
+    <a href="{% url 'crm:deal_create' %}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+      <i data-lucide="plus" aria-hidden="true"></i>
+      New Deal
+    </a>
+  </div>
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3 text-left">Deal</th>
+          <th class="px-6 py-3 text-left">Value</th>
+          <th class="px-6 py-3 text-left">Status</th>
+          <th class="px-6 py-3 text-left">Stage</th>
+          <th class="px-6 py-3 text-left">Close Date</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+        {% for deal in deals %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 font-medium">{{ deal.title }}</td>
+          <td class="px-6 py-4">${{ deal.value }}</td>
+          <td class="px-6 py-4">
+            <span class="px-2 py-1 text-xs rounded-full
+              {% if deal.status == 'won' %}bg-green-100 text-green-700
+              {% elif deal.status == 'lost' %}bg-red-100 text-red-700
+              {% else %}bg-blue-100 text-blue-700{% endif %}">
+              {{ deal.get_status_display }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-gray-500">{{ deal.pipeline_stage.name|default:"-" }}</td>
+          <td class="px-6 py-4 text-gray-500">{{ deal.expected_close_date|date:"M d, Y"|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-6 py-12 text-center text-gray-500">No deals yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

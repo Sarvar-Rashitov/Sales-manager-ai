@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Follow-ups{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">Follow-ups</h1>
+    <a href="{% url 'followups:followup_create' %}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+      <i data-lucide="calendar-plus" aria-hidden="true"></i>
+      Schedule Follow-up
+    </a>
+  </div>
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3 text-left">Lead</th>
+          <th class="px-6 py-3 text-left">Channel</th>
+          <th class="px-6 py-3 text-left">Status</th>
+          <th class="px-6 py-3 text-left">Scheduled</th>
+          <th class="px-6 py-3 text-left">AI</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+        {% for fu in followups %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 font-medium">{{ fu.lead.title }}</td>
+          <td class="px-6 py-4 text-gray-500">{{ fu.get_channel_display }}</td>
+          <td class="px-6 py-4">
+            <span class="px-2 py-1 text-xs rounded-full
+              {% if fu.status == 'sent' %}bg-green-100 text-green-700
+              {% elif fu.status == 'failed' %}bg-red-100 text-red-700
+              {% elif fu.status == 'pending' %}bg-yellow-100 text-yellow-700
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ fu.get_status_display }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-gray-500">{{ fu.scheduled_at|date:"M d, Y H:i" }}</td>
+          <td class="px-6 py-4">
+            {% if fu.ai_generated %}
+              <i data-lucide="bot" class="text-purple-600" aria-label="AI generated"></i>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-6 py-12 text-center text-gray-500">No follow-ups scheduled.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

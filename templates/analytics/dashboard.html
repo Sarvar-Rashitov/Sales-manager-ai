@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Analytics - AI Sales Manager{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <h1 class="text-2xl font-bold">Analytics</h1>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {% include "partials/stat_card.html" with label="Total Leads" value=stats.total_leads icon="users" %}
+    {% include "partials/stat_card.html" with label="Conversion Rate" value=stats.conversion_rate|stringformat:"s%%" icon="trending-up" %}
+    {% include "partials/stat_card.html" with label="Total Revenue" value=stats.total_revenue icon="badge-dollar-sign" %}
+    {% include "partials/stat_card.html" with label="Avg Lead Score" value=stats.avg_lead_score icon="star" %}
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Sales Funnel -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="text-lg font-semibold mb-4">Sales Funnel</h2>
+      <canvas id="funnelChart" height="200"></canvas>
+    </div>
+
+    <!-- Lead Trend -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="text-lg font-semibold mb-4">Lead Trend (30 days)</h2>
+      <canvas id="trendChart" height="200"></canvas>
+    </div>
+
+    <!-- Source Breakdown -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="text-lg font-semibold mb-4">Lead Sources</h2>
+      <canvas id="sourceChart" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const funnelData = {{ funnel_json|safe }};
+const trendData = {{ trend_json|safe }};
+const sourceData = {{ sources_json|safe }};
+
+// Funnel chart
+new Chart(document.getElementById('funnelChart'), {
+  type: 'bar',
+  data: {
+    labels: funnelData.map(d => d.label),
+    datasets: [{
+      label: 'Leads',
+      data: funnelData.map(d => d.count),
+      backgroundColor: '#6366f1',
+      borderRadius: 6,
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+// Trend chart
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: trendData.map(d => d.date),
+    datasets: [{
+      label: 'New Leads',
+      data: trendData.map(d => d.count),
+      borderColor: '#6366f1',
+      backgroundColor: 'rgba(99,102,241,0.1)',
+      fill: true,
+      tension: 0.4,
+    }]
+  },
+  options: { responsive: true }
+});
+
+// Source chart
+new Chart(document.getElementById('sourceChart'), {
+  type: 'doughnut',
+  data: {
+    labels: sourceData.map(d => d.source),
+    datasets: [{
+      data: sourceData.map(d => d.count),
+      backgroundColor: ['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6'],
+    }]
+  },
+  options: { responsive: true }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <h1 class="text-2xl font-bold">Tasks</h1>
+  <div class="space-y-3">
+    {% for task in tasks %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
+      <div>
+        <p class="font-medium">{{ task.title }}</p>
+        <p class="text-sm text-gray-500">{{ task.priority }} priority / Due: {{ task.due_date|date:"M d, Y H:i"|default:"No due date" }}</p>
+      </div>
+      <span class="px-2 py-1 text-xs rounded-full
+        {% if task.priority == 'high' %}bg-red-100 text-red-700
+        {% elif task.priority == 'medium' %}bg-yellow-100 text-yellow-700
+        {% else %}bg-gray-100 text-gray-700{% endif %}">
+        {{ task.get_priority_display }}
+      </span>
+    </div>
+    {% empty %}
+    <p class="text-gray-500 text-center py-12">No pending tasks.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

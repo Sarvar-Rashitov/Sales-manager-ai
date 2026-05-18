@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}Settings - {{ org.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold">Organization Settings</h1>
+      <p class="text-gray-500 text-sm mt-1">{{ org.name }} - API keys, AI config, notifications</p>
+    </div>
+    <a href="{% url 'telegram:account_list' %}"
+       class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+      Telegram Accounts <i data-lucide="arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- OpenAI -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="flex items-center gap-2 text-lg font-semibold mb-1">
+        <i data-lucide="bot" aria-hidden="true"></i>
+        OpenAI
+      </h2>
+      <p class="text-sm text-gray-500 mb-4">Bo'sh qoldirsangiz global <code>.env</code> kaliti ishlatiladi</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for fname in "openai_api_key,openai_model,openai_embedding_model"|split:"," %}
+        {% with field=form|getitem:fname %}
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>{% endif %}
+          {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>{% endif %}
+        </div>
+        {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Telegram MTProto -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="flex items-center gap-2 text-lg font-semibold mb-1">
+        <i data-lucide="smartphone" aria-hidden="true"></i>
+        Telegram MTProto (Userbot)
+      </h2>
+      <p class="text-sm text-gray-500 mb-4">
+        <a href="https://my.telegram.org/apps" target="_blank" class="text-indigo-600 hover:underline">my.telegram.org/apps</a> dan oling
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for fname in "telegram_api_id,telegram_api_hash"|split:"," %}
+        {% with field=form|getitem:fname %}
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>{% endif %}
+        </div>
+        {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- AI Behaviour -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="flex items-center gap-2 text-lg font-semibold mb-4">
+        <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+        AI Behaviour
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for fname in "ai_enabled,ai_language,ai_reply_delay_min,ai_reply_delay_max,daily_message_limit"|split:"," %}
+        {% with field=form|getitem:fname %}
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>{% endif %}
+        </div>
+        {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- AI Context -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="flex items-center gap-2 text-lg font-semibold mb-1">
+        <i data-lucide="building-2" aria-hidden="true"></i>
+        Company Context for AI
+      </h2>
+      <p class="text-sm text-gray-500 mb-4">Bu ma'lumotlar AI system prompt'ga avtomatik qo'shiladi</p>
+      <div class="space-y-4">
+        {% for fname in "company_description,products_services,support_contact"|split:"," %}
+        {% with field=form|getitem:fname %}
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>{% endif %}
+        </div>
+        {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="flex items-center gap-2 text-lg font-semibold mb-4">
+        <i data-lucide="bell-ring" aria-hidden="true"></i>
+        Notifications
+      </h2>
+      <div class="space-y-3">
+        {% with field=form|getitem:"notify_email" %}
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+          {{ field }}
+        </div>
+        {% endwith %}
+        {% for fname in "notify_on_new_lead,notify_on_qualified_lead"|split:"," %}
+        {% with field=form|getitem:fname %}
+        <label class="flex items-center space-x-3 cursor-pointer">
+          {{ field }}
+          <span class="text-sm">{{ field.label }}</span>
+        </label>
+        {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4 pb-6">
+      <button type="submit"
+              class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2.5 rounded-lg font-medium transition-colors">
+        <i data-lucide="save" aria-hidden="true"></i>
+        Save Settings
+      </button>
+      <a href="{% url 'dashboard:index' %}" class="text-gray-500 hover:text-gray-700 text-sm">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

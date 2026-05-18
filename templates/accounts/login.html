@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Login - AI Sales Manager{% endblock %}
+
+{% block auth_content %}
+<div class="w-full max-w-md">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 border border-gray-200 dark:border-gray-700">
+    <div class="text-center mb-8">
+      <h1 class="inline-flex items-center justify-center gap-2 text-3xl font-bold text-indigo-600">
+        <i data-lucide="bot" class="icon-lg" aria-hidden="true"></i>
+        AI Sales Manager
+      </h1>
+      <p class="text-gray-500 mt-2">Sign in to your account</p>
+    </div>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ field.label }}</label>
+          <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}"
+                 value="{{ field.value|default:'' }}"
+                 {% if field.field.required %}required{% endif %} />
+          {% if field.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      {% if form.non_field_errors %}
+        <div class="bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg text-sm">
+          {{ form.non_field_errors|join:", " }}
+        </div>
+      {% endif %}
+
+      <button type="submit"
+              class="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-colors">
+        <i data-lucide="log-in" aria-hidden="true"></i>
+        Sign In
+      </button>
+    </form>
+
+    <div class="mt-6 text-center text-sm text-gray-500 space-y-2">
+      <p><a href="{% url 'accounts:password_reset_request' %}" class="text-indigo-600 hover:underline">Forgot password?</a></p>
+      <p>Don't have an account? <a href="{% url 'accounts:register' %}" class="text-indigo-600 hover:underline">Register</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

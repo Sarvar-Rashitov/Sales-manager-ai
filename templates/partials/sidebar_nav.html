@@ -1,0 +1,170 @@
+{% load static %}
+{% url 'dashboard:index' as url_dashboard %}
+{% url 'crm:lead_list' as url_leads %}
+{% url 'crm:contact_list' as url_contacts %}
+{% url 'crm:company_list' as url_companies %}
+{% url 'crm:deal_list' as url_deals %}
+{% url 'crm:task_list' as url_tasks %}
+{% url 'telegram:account_list' as url_telegram %}
+{% url 'telegram:inbox' as url_inbox %}
+{% url 'messaging:inbox' as url_messages %}
+{% url 'analytics:dashboard' as url_analytics %}
+{% url 'knowledge_base:document_list' as url_kb %}
+{% url 'followups:followup_list' as url_followups %}
+{% url 'ai_agents:prompt_list' as url_prompts %}
+{% url 'ai_agents:log_list' as url_logs %}
+{% url 'sales:proposal_list' as url_proposals %}
+
+{% with request.path as path %}
+
+<a href="{{ url_dashboard }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if path == url_dashboard %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="layout-dashboard" aria-hidden="true"></i><span>Dashboard</span>
+</a>
+
+<div class="pt-2 pb-1">
+  <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">CRM</p>
+</div>
+
+<a href="{{ url_leads }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'leads' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="users" aria-hidden="true"></i><span>Leads</span>
+</a>
+
+<a href="{{ url_contacts }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'contacts' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="contact" aria-hidden="true"></i><span>Contacts</span>
+</a>
+
+<a href="{{ url_companies }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'companies' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="building-2" aria-hidden="true"></i><span>Companies</span>
+</a>
+
+<a href="{{ url_deals }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'deals' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="briefcase-business" aria-hidden="true"></i><span>Deals</span>
+</a>
+
+<a href="{{ url_tasks }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'tasks' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="list-checks" aria-hidden="true"></i><span>Tasks</span>
+</a>
+
+<div class="pt-2 pb-1">
+  <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Telegram</p>
+</div>
+
+<a href="{{ url_telegram }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'telegram/accounts' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="smartphone" aria-hidden="true"></i><span>Accounts</span>
+</a>
+
+<a href="{% url 'telegram:broadcast_list' %}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'broadcast' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="send" aria-hidden="true"></i><span>Broadcast</span>
+</a>
+
+<a href="{{ url_inbox }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'telegram/inbox' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="inbox" aria-hidden="true"></i><span>Inbox</span>
+</a>
+
+<div class="pt-2 pb-1">
+  <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Messaging</p>
+</div>
+
+<a href="{{ url_messages }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'messaging' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="messages-square" aria-hidden="true"></i><span>Conversations</span>
+</a>
+
+<div class="pt-2 pb-1">
+  <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">AI</p>
+</div>
+
+<a href="{{ url_prompts }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'prompts' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="brain-circuit" aria-hidden="true"></i><span>Prompts</span>
+</a>
+
+<a href="{{ url_logs }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'logs' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="activity" aria-hidden="true"></i><span>AI Logs</span>
+</a>
+
+<a href="{{ url_kb }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'knowledge' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="library" aria-hidden="true"></i><span>Knowledge Base</span>
+</a>
+
+<div class="pt-2 pb-1">
+  <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Sales</p>
+</div>
+
+<a href="{{ url_proposals }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'proposals' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="file-text" aria-hidden="true"></i><span>Proposals</span>
+</a>
+
+<a href="{{ url_followups }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'followups' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="bell-ring" aria-hidden="true"></i><span>Follow-ups</span>
+</a>
+
+<a href="{{ url_analytics }}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'analytics' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Analytics</span>
+</a>
+
+<div class="pt-2 pb-1">
+  <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Account</p>
+</div>
+
+<a href="{% url 'accounts:settings' %}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'settings' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="settings" aria-hidden="true"></i><span>Settings</span>
+</a>
+
+<a href="{% url 'accounts:profile' %}"
+   class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+          {% if 'profile' in path %}bg-indigo-50 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300
+          {% else %}text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700{% endif %}">
+  <i data-lucide="circle-user-round" aria-hidden="true"></i><span>Profile</span>
+</a>
+
+{% endwith %}

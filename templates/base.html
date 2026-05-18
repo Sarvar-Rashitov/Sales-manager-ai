@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', sidebarOpen: true }"
+      :class="{ 'dark': darkMode }">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}AI Sales Manager{% endblock %}</title>
+
+  <!-- TailwindCSS CDN (swap for compiled CSS in production) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { brand: { 500: '#6366f1', 600: '#4f46e5' } } } }
+    }
+  </script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+  <!-- Icons -->
+  <script defer src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    [data-lucide],
+    .lucide {
+      width: 1rem;
+      height: 1rem;
+      stroke-width: 2;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
+
+    .icon-lg[data-lucide],
+    .icon-lg [data-lucide],
+    .icon-lg.lucide,
+    .icon-lg .lucide {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      background: #ffffff;
+      color: #111827;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      outline: none;
+      transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+    }
+
+    input[type="file"] {
+      padding: 0.5rem;
+      color: #374151;
+    }
+
+    select {
+      padding-right: 2.25rem;
+    }
+
+    textarea {
+      min-height: 6rem;
+      resize: vertical;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):focus,
+    select:focus,
+    textarea:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+      width: 1rem;
+      height: 1rem;
+      accent-color: #4f46e5;
+    }
+
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .dark input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+    .dark select,
+    .dark textarea {
+      border-color: #4b5563;
+      background: #111827;
+      color: #f9fafb;
+    }
+
+    .dark input[type="file"] {
+      color: #d1d5db;
+    }
+
+    .dark input::placeholder,
+    .dark textarea::placeholder {
+      color: #6b7280;
+    }
+
+    .dark input:disabled,
+    .dark select:disabled,
+    .dark textarea:disabled {
+      background: #1f2937;
+      color: #9ca3af;
+    }
+
+    #lead-selector ul,
+    .checkbox-list ul {
+      display: grid;
+      gap: 0.375rem;
+    }
+
+    #lead-selector label,
+    .checkbox-list label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #374151;
+      font-size: 0.875rem;
+    }
+
+    .dark #lead-selector label,
+    .dark .checkbox-list label {
+      color: #d1d5db;
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+{% if user.is_authenticated %}
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col"
+         x-show="sidebarOpen">
+    <!-- Logo -->
+    <div class="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-700">
+      <span class="flex items-center gap-2 text-xl font-bold text-indigo-600 dark:text-indigo-400">
+        <i data-lucide="bot" class="icon-lg" aria-hidden="true"></i>
+        AI Sales
+      </span>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+      {% include "partials/sidebar_nav.html" %}
+    </nav>
+
+    <!-- User info -->
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-bold">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium truncate">{{ user.full_name }}</p>
+          <p class="text-xs text-gray-500 truncate">{{ user.get_role_display }}</p>
+        </div>
+        <a href="{% url 'accounts:logout' %}" class="text-gray-400 hover:text-red-500 text-xs">Logout</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top bar -->
+    <header class="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center px-6 justify-between">
+      <button @click="sidebarOpen = !sidebarOpen"
+              class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              aria-label="Toggle sidebar">
+        <i data-lucide="menu" class="icon-lg" aria-hidden="true"></i>
+      </button>
+
+      <div class="flex items-center space-x-4">
+        <!-- Dark mode toggle -->
+        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)"
+                class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                aria-label="Toggle dark mode">
+          <i x-show="!darkMode" data-lucide="moon" aria-hidden="true"></i>
+          <i x-show="darkMode" data-lucide="sun" aria-hidden="true"></i>
+        </button>
+        <span class="text-sm text-gray-500">{{ user.organization.name }}</span>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <!-- Flash messages -->
+      {% if messages %}
+        <div class="mb-4 space-y-2">
+          {% for message in messages %}
+            <div class="px-4 py-3 rounded-lg text-sm
+              {% if message.tags == 'success' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+              {% elif message.tags == 'error' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+              {% else %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200{% endif %}"
+                 x-data="{ show: true }" x-show="show">
+              <div class="flex items-start justify-between gap-3">
+                <span>{{ message }}</span>
+                <button @click="show = false" class="shrink-0" aria-label="Dismiss message">
+                  <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+{% else %}
+  <!-- Unauthenticated layout -->
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    {% block auth_content %}{% endblock %}
+  </div>
+{% endif %}
+
+{% block extra_scripts %}{% endblock %}
+<script>
+  function renderLucideIcons() {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', renderLucideIcons);
+  document.addEventListener('htmx:afterSwap', renderLucideIcons);
+</script>
+</body>
+</html>

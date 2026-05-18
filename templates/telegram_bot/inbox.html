@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Telegram Inbox{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <h1 class="text-2xl font-bold">Telegram Inbox</h1>
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3 text-left">Direction</th>
+          <th class="px-6 py-3 text-left">Sender</th>
+          <th class="px-6 py-3 text-left">Message</th>
+          <th class="px-6 py-3 text-left">AI</th>
+          <th class="px-6 py-3 text-left">Time</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+        {% for msg in messages %}
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-3">
+            <span class="px-2 py-1 text-xs rounded-full
+              {% if msg.direction == 'inbound' %}bg-blue-100 text-blue-700{% else %}bg-green-100 text-green-700{% endif %}">
+              {{ msg.get_direction_display }}
+            </span>
+          </td>
+          <td class="px-6 py-3">
+            <p class="font-medium">{{ msg.sender_name }}</p>
+            {% if msg.sender_username %}<p class="text-xs text-gray-500">@{{ msg.sender_username }}</p>{% endif %}
+          </td>
+          <td class="px-6 py-3 max-w-xs truncate">{{ msg.text }}</td>
+          <td class="px-6 py-3">
+            {% if msg.ai_processed %}
+              <i data-lucide="check-circle-2" class="text-green-600" aria-label="Processed"></i>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td class="px-6 py-3 text-gray-500">{{ msg.created_at|timesince }} ago</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-6 py-12 text-center text-gray-500">No messages yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block title %}{{ action }} Broadcast{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center space-x-3">
+    <a href="{% url 'telegram:broadcast_list' %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600">
+      <i data-lucide="arrow-left" aria-hidden="true"></i>
+      Broadcasts
+    </a>
+    <h1 class="text-2xl font-bold">{{ action }} Broadcast</h1>
+  </div>
+
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- Basic info -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+      <h2 class="font-semibold">Basic Info</h2>
+      {% for fname in "name,channel,userbot_account,bot"|split:"," %}
+      {% with field=form|getitem:fname %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>{% endif %}
+        {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>{% endif %}
+      </div>
+      {% endwith %}
+      {% endfor %}
+    </div>
+
+    <!-- Message -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+      <h2 class="font-semibold">Message</h2>
+      {% with field=form|getitem:"message_text" %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
+      </div>
+      {% endwith %}
+      {% with field=form|getitem:"parse_mode" %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+      </div>
+      {% endwith %}
+    </div>
+
+    <!-- Recipients -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+      <h2 class="font-semibold">Recipients</h2>
+      {% with field=form|getitem:"target_all_leads" %}
+      <label class="flex items-center space-x-3 cursor-pointer">
+        {{ field }}
+        <span class="text-sm font-medium">{{ field.label }}</span>
+      </label>
+      <p class="text-xs text-gray-400">{{ field.help_text }}</p>
+      {% endwith %}
+
+      <div id="lead-selector" class="mt-3">
+        {% with field=form|getitem:"target_leads" %}
+        <label class="block text-sm font-medium mb-2">{{ field.label }}</label>
+        <div class="max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg p-3 space-y-1">
+          {{ field }}
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+
+    <div class="flex space-x-3">
+      <button type="submit"
+              class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium">
+        <i data-lucide="send" aria-hidden="true"></i>
+        Create Broadcast
+      </button>
+      <a href="{% url 'telegram:broadcast_list' %}"
+         class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg font-medium">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+// target_all_leads checkbox'i bosilganda lead selector'ni yashirish
+const allLeadsCheck = document.querySelector('[name="target_all_leads"]');
+const leadSelector = document.getElementById('lead-selector');
+function toggleLeadSelector() {
+  leadSelector.style.display = allLeadsCheck.checked ? 'none' : 'block';
+}
+if (allLeadsCheck) {
+  allLeadsCheck.addEventListener('change', toggleLeadSelector);
+  toggleLeadSelector();
+}
+</script>
+{% endblock %}

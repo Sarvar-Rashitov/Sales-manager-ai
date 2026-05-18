@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}AI Chat - {{ lead.title }}{% endblock %}
+
+{% block content %}
+<div class="flex flex-col h-full" style="height: calc(100vh - 8rem);">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center space-x-3">
+      <a href="{% url 'crm:lead_detail' lead.pk %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600">
+        <i data-lucide="arrow-left" aria-hidden="true"></i>
+        Lead
+      </a>
+      <h1 class="flex items-center gap-2 text-xl font-bold">
+        <i data-lucide="bot" class="text-purple-600" aria-hidden="true"></i>
+        AI Chat - {{ lead.title }}
+      </h1>
+      <span class="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full">{{ lead.get_status_display }}</span>
+    </div>
+    <div class="text-sm text-gray-500">Score: {{ lead.score }}/100</div>
+  </div>
+
+  <!-- Chat window -->
+  <div class="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
+    <!-- Messages -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4">
+      {% for msg in messages %}
+        {% if msg.role == 'user' %}
+        <div class="flex justify-end">
+          <div class="max-w-xs lg:max-w-md bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm">
+            {{ msg.content }}
+          </div>
+        </div>
+        {% else %}
+        <div class="flex justify-start">
+          <div class="flex space-x-2">
+            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="bot" aria-hidden="true"></i>
+            </div>
+            <div class="max-w-xs lg:max-w-md bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm px-4 py-3 text-sm">
+              {{ msg.content }}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      {% empty %}
+        <div class="text-center text-gray-400 py-12">
+          <i data-lucide="bot" class="mx-auto mb-3 text-purple-500" style="width: 2.5rem; height: 2.5rem;" aria-hidden="true"></i>
+          <p>Start the conversation. The AI will respond based on the lead's status.</p>
+        </div>
+      {% endfor %}
+
+      <!-- HTMX response target -->
+      <div id="new-messages"></div>
+    </div>
+
+    <!-- Input -->
+    <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+      <form hx-post="{% url 'ai_agents:send_message' lead.pk %}"
+            hx-target="#new-messages"
+            hx-swap="beforeend"
+            hx-on::after-request="this.reset(); document.getElementById('chat-messages').scrollTop = 999999"
+            class="flex space-x-3">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Type a message..."
+               class="flex-1 text-sm"
+               autocomplete="off" required />
+        <button type="submit"
+                class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">
+          <i data-lucide="send" aria-hidden="true"></i>
+          Send
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-scroll to bottom on load
+  document.getElementById('chat-messages').scrollTop = 999999;
+</script>
+{% endblock %}

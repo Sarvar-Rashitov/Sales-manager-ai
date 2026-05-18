@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Prompt{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <h1 class="text-xl font-bold mb-6">{{ action }} AI Prompt</h1>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <p class="text-xs text-gray-500 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+        Available variables: <code>{organization_name}</code>, <code>{contact_name}</code>, <code>{lead_title}</code>, <code>{lead_status}</code>, <code>{lead_score}</code>, <code>{budget}</code>
+      </p>
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium">Save</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

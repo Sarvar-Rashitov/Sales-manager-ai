@@ -1,0 +1,18 @@
+<!-- User message -->
+<div class="flex justify-end">
+  <div class="max-w-xs lg:max-w-md bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm">
+    {{ user_message }}
+  </div>
+</div>
+
+<!-- AI response -->
+<div class="flex justify-start">
+  <div class="flex space-x-2">
+    <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0">
+      <i data-lucide="bot" aria-hidden="true"></i>
+    </div>
+    <div class="max-w-xs lg:max-w-md bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm px-4 py-3 text-sm">
+      {{ ai_response }}
+    </div>
+  </div>
+</div>

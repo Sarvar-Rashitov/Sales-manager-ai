@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Add Telegram Bot{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto space-y-6">
+  <div class="flex items-center space-x-3">
+    <a href="{% url 'telegram:account_list' %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600">
+      <i data-lucide="arrow-left" aria-hidden="true"></i>
+      Back
+    </a>
+    <h1 class="text-2xl font-bold">Add Telegram Bot</h1>
+  </div>
+
+  <div class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4 text-sm text-blue-800 dark:text-blue-200">
+    <p class="font-semibold mb-1">How to get a bot token:</p>
+    <ol class="list-decimal list-inside space-y-1">
+      <li>Open Telegram and search for <strong>@BotFather</strong></li>
+      <li>Send <code>/newbot</code> and follow instructions</li>
+      <li>Copy the token and paste below</li>
+    </ol>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>{% endif %}
+        {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit"
+              class="inline-flex w-full items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-medium">
+        <i data-lucide="bot" aria-hidden="true"></i>
+        Add Bot & Verify Token
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

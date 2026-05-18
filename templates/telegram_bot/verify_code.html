@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Verify Code{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <h1 class="text-xl font-bold mb-2">Enter Verification Code</h1>
+    <p class="text-gray-500 text-sm mb-6">Code sent to {{ account.phone_number }}</p>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+      </div>
+      {% endfor %}
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-medium">
+        Verify
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
